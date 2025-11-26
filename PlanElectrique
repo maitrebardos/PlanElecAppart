@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Plan interactif avec popup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; }
+  img { max-width:100%; height:auto; display:block; margin:0 auto; }
+  
+  /* Popup overlay */
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #modal {
+    background: #fff;
+    padding: 20px;
+    max-width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  #modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+</style>
+</head>
+<body>
+
+<img src="IMG_8678.png" usemap="#image-map" id="plan">
+
+<map name="image-map">
+    <area target="_self" alt="Boitier Fibre" title="Boitier Fibre" href="" coords="2904,1683,2898,1019,2466,1035,2434,1686" shape="poly">
+    <area target="_self" alt="Disjoncteur principal" title="Disjoncteur principal" href="" coords="2463,2031,2452,3107,2968,3102,2973,2012" shape="poly">
+    <area target="_self" alt="Compteur Linky" title="Compteur Linky" href="" coords="1694,2101,2423,3145" shape="rect">
+    <area target="_self" alt="Cable antenne TNT immeuble" title="Cable antenne TNT immeuble" href="" coords="2157,1068,122" shape="circle">
+    <area target="_self" alt="Disjoncteur1" title="Disjoncteur1" href="" coords="137,1420,123,1140,342,1133,358,1408" shape="poly">
+    <area target="_self" alt="Disjoncteur2" title="Disjoncteur2" href="" coords="192,1910,401,1902,406,2146,211,2164" shape="poly">
+    <area target="_self" alt="Disjoncteur3" title="Disjoncteur3" href="" coords="246,2629,438,2624,451,2856,259,2870" shape="poly">
+    <area target="_self" alt="F1.1" title="F1.1" href="" coords="358,1136,467,1130,484,1395,374,1403" shape="poly">
+    <area target="_self" alt="F1.2" title="F1.2" href="" coords="481,1133,492,1395,590,1395,577,1130" shape="poly">
+    <area target="_self" alt="F1.3" title="F1.3" href="" coords="588,1133,687,1130,705,1392,601,1395" shape="poly">
+    <area target="_self" alt="F1.4" title="F1.4" href="" coords="697,1120,793,1122,825,1389,711,1392" shape="poly">
+    <area target="_self" alt="F1.5" title="F1.5" href="" coords="807,1120,916,1120,927,1384,820,1387" shape="poly">
+    <area target="_self" alt="F1.6" title="F1.6" href="" coords="930,1120,1023,1122,1045,1387,935,1392" shape="poly">
+    <area target="_self" alt="Compteur perso" title="Compteur perso" href="" coords="1221,1114,1429,1106,1451,1381,1232,1389" shape="poly">
+    <area target="_self" alt="F2.1" title="F2.1" href="" coords="411,1905,508,1900,534,2148,411,2164" shape="poly">
+    <area target="_self" alt="F2.2" title="F2.2" href="" coords="516,1897,622,1897,644,2146,534,2138" shape="poly">
+    <area target="_self" alt="F2.3" title="F2.3" href="" coords="630,1897,729,1894,751,2140,649,2146" shape="poly">
+    <area target="_self" alt="F2.4" title="F2.4" href="" coords="740,1892,841,1894,858,2143,759,2143" shape="poly">
+    <area target="_self" alt="F2.5" title="F2.5" href="" coords="849,1889,940,1886,967,2146,863,2146" shape="poly">
+    <area target="_self" alt="PC1" title="PC1" href="" coords="951,1886,1215,1884,1221,2140,967,2138" shape="poly">
+    <area target="_self" alt="PC2" title="PC2" href="" coords="1218,1876,1483,1876,1488,2130,1226,2132" shape="poly">
+    <area target="_self" alt="F3.1" title="F3.1" href="" coords="454,2632,548,2621,558,2859,457,2862" shape="poly">
+    <area target="_self" alt="F3.2" title="F3.2" href="" coords="556,2619,657,2616,673,2867,569,2875" shape="poly">
+    <area target="_self" alt="F3.3" title="F3.3" href="" coords="663,2619,759,2608,775,2856,673,2867" shape="poly">
+    <area target="_self" alt="F3.4" title="F3.4" href="" coords="767,2619,868,2608,882,2851,780,2856" shape="poly">
+    <area target="_self" alt="F3.5" title="F3.5" href="" coords="874,2613,967,2602,983,2854,890,2859" shape="poly">
+    <area target="_self" alt="F3.6" title="F3.6" href="" coords="978,2608,1077,2597,1087,2851,988,2846" shape="poly">
+    <area target="_self" alt="F3.7" title="F3.7" href="" coords="1087,2594,1186,2594,1194,2851,1098,2856" shape="poly">
+</map>
+
+<!-- Modal popup -->
+<div id="modal-overlay">
+  <div id="modal">
+    <span id="modal-close">✖</span>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/image-map-resizer/1.0.10/js/imageMapResizer.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  imageMapResize();
+
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalContent = document.getElementById('modal-content');
+  const modalClose = document.getElementById('modal-close');
+
+  const areas = document.querySelectorAll('area');
+  areas.forEach(area => {
+    area.addEventListener('click', function(e) {
+      e.preventDefault();
+      const content = area.dataset.content || area.title;
+      modalContent.innerHTML = "<h3>" + area.title + "</h3><p>" + content + "</p>";
+      modalOverlay.style.display = "flex";
+    });
+  });
+
+  modalClose.addEventListener('click', function() {
+    modalOverlay.style.display = "none";
+  });
+
+  modalOverlay.addEventListener('click', function(e) {
+    if(e.target === modalOverlay) modalOverlay.style.display = "none";
+  });
+});
+</script>
+
+</body>
+</html>
